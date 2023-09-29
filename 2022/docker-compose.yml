@@ -1,0 +1,46 @@
+# docker-compose.yml
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
+version: "3.8"
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${COMPOSE_PROJECT_NAME:?err}-2022
+    container_name: ${COMPOSE_PROJECT_NAME:?err}_db
+    ports:
+      - 1433:1433
+    volumes:
+      - data:/var/opt/mssql/data
+      - log:/var/opt/mssql/log
+      - backup:/var/opt/mssql/backup
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#environment
+    environment:
+      # List of all SQL Server environment variables:
+      # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-ver15#environment-variables
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      # We don't use MSSQL_SA_PASSWORD here because we will get a password from "MSSQL_SA_PASSWORD_FILE" in entrypoint.sh
+      - MSSQL_SA_PASSWORD_FILE=/run/secrets/sa_password
+      - MSSQL_DATA_DIR=/var/opt/mssql/data
+      - MSSQL_LOG_DIR=/var/opt/mssql/log
+      - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
+    networks:
+      - network
+    # Use the defined secret
+    secrets:
+      - sa_password
+# Create name volumes managed by Docker to not lose data when remove a container
+# https://docs.docker.com/compose/compose-file/compose-file-v3/#volumes
+volumes:
+  data:
+  log:
+  backup:
+networks:
+  network:
+# Define a secret at top level
+# External secrets are not available to containers created by docker-compose.
+secrets:
+  sa_password:
+    file: ./sa_password.secret # Add this file in .gitignore to ignore from a repository.
+
