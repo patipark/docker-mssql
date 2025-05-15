@@ -1,6 +1,5 @@
 # docker-compose.yml
 # https://docs.docker.com/compose/compose-file/compose-file-v3/
-version: "3.8"
 services:
   db:
     build:
@@ -20,6 +19,7 @@ services:
       # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-ver15#environment-variables
       - ACCEPT_EULA=Y
       - MSSQL_PID=Developer
+      - MSSQL_COLLATION=Thai_CI_AS
       # We don't use MSSQL_SA_PASSWORD here because we will get a password from "MSSQL_SA_PASSWORD_FILE" in entrypoint.sh
       - MSSQL_SA_PASSWORD_FILE=/run/secrets/sa_password
       - MSSQL_DATA_DIR=/var/opt/mssql/data
