@@ -9,7 +9,8 @@ services:
     image: ${COMPOSE_PROJECT_NAME:?err}-2022
     container_name: ${COMPOSE_PROJECT_NAME:?err}_db
     ports:
-      - 1433:1433
+      #- 1433:1433
+      - 17160:1433
     volumes:
       - data:/var/opt/mssql/data
       - log:/var/opt/mssql/log

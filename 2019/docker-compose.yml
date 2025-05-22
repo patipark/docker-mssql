@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile
     image: ${COMPOSE_PROJECT_NAME:?err}-2019
     container_name: ${COMPOSE_PROJECT_NAME:?err}_db
+    restart: always
     ports:
-      - 1433:1433
+      #- 1433:1433
+      - 17160:1433
     volumes:
       - data:/var/opt/mssql/data
       - log:/var/opt/mssql/log
@@ -25,6 +27,8 @@ services:
       - MSSQL_DATA_DIR=/var/opt/mssql/data
       - MSSQL_LOG_DIR=/var/opt/mssql/log
       - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
+      - MSSQL_ENABLE_HADR=0
+      - MSSQL_AGENT_ENABLED=false
     networks:
       - network
     # Use the defined secret
