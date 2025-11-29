@@ -15,6 +15,15 @@ services:
       - data:/var/opt/mssql/data
       - log:/var/opt/mssql/log
       - backup:/var/opt/mssql/backup
+    # Resource limits to save CPU and Memory
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'        # จำกัด CPU ไม่เกิน 2 cores
+          memory: 2G         # จำกัด RAM ไม่เกิน 2GB
+        reservations:
+          cpus: '0.5'        # สำรองขั้นต่ำ 0.5 core
+          memory: 512M       # สำรอง RAM ขั้นต่ำ 512MB
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#environment
     environment:
       # List of all SQL Server environment variables:
@@ -22,6 +31,8 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_PID=Developer
       - MSSQL_COLLATION=Thai_CI_AS
+      # Memory optimization settings
+      - MSSQL_MEMORY_LIMIT_MB=1536  # จำกัดหน่วยความจำที่ SQL Server ใช้ (1.5GB)
       # We don't use MSSQL_SA_PASSWORD here because we will get a password from "MSSQL_SA_PASSWORD_FILE" in entrypoint.sh
       - MSSQL_SA_PASSWORD_FILE=/run/secrets/sa_password
       - MSSQL_DATA_DIR=/var/opt/mssql/data
@@ -29,6 +40,7 @@ services:
       - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
       - MSSQL_ENABLE_HADR=0
       - MSSQL_AGENT_ENABLED=false
+      - TZ=Asia/Bangkok
     networks:
       - network
     # Use the defined secret
